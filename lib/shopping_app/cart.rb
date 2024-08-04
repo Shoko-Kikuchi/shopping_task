@@ -1,7 +1,11 @@
 require_relative "item_manager"
+require_relative "ownable"
 
 class Cart
   include ItemManager
+  include Ownable
+
+  attr_accessor :owner
 
   def initialize(owner)
     self.owner = owner
@@ -19,11 +23,24 @@ class Cart
   end
 
   def total_amount
+    # total_amountメソッドは、カート内の全アイテムの合計金額を計算
     @items.sum(&:price)
   end
 
   def check_out
     return if owner.wallet.balance < total_amount
+    # check_outメソッド、カートのオーナーのウォレットの残高がカート内のアイテムの合計金額以上か確認。十分な残高がない場合、処理中断。
+
+    @items.each do |item|
+      owner.wallet.withdraw(item.price)
+      # カートのオーナーのウォレットからアイテムの価格分を引き出す。
+      item.owner.wallet.deposit(item.price)
+      # アイテムの元のオーナーのウォレットにアイテムの価格分を入金。
+      item.owner = owner
+      # アイテムのオーナーをカートのオーナーに変更。
+    end
+    @items.clear
+    
   # ## 要件
   #   - カートの中身（Cart#items）のすべてのアイテムの購入金額が、カートのオーナーのウォレットからアイテムのオーナーのウォレットに移されること。
   #   - カートの中身（Cart#items）のすべてのアイテムのオーナー権限が、カートのオーナーに移されること。
