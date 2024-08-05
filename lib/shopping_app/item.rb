@@ -1,4 +1,7 @@
+require_relative "ownable"
+
 class Item
+  include Ownable
   attr_reader :number, :name, :price
 
   @@instances = []
@@ -20,6 +23,14 @@ class Item
   def self.all
     #　@@instancesを返します ==> Item.allでこれまでに生成されたItemインスタンスを全て返すということです。
     @@instances
+  end
+
+  def name
+    @name
+  end
+
+  def price
+    @price
   end
 
 end
