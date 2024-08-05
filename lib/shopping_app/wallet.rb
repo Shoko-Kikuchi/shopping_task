@@ -1,4 +1,7 @@
+require_relative "ownable"
+
 class Wallet
+  include Ownable
   attr_reader :balance
 
   def initialize(owner)
@@ -11,9 +14,9 @@ class Wallet
   end
 
   def withdraw(amount)
-    return unless @balance >= amount
+    return nil unless @balance >= amount.to_i
     @balance -= amount.to_i
-    amount
+    amount.to_i
   end
 
 end
